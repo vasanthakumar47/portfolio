@@ -22,7 +22,7 @@ if _admin_pw_hash_env:
     ADMIN_PASSWORD_HASH = _admin_pw_hash_env
 else:
     # fallback for local/dev
-    ADMIN_PASSWORD_HASH = generate_password_hash(_admin_pw_plain or "vasanth")
+    ADMIN_PASSWORD_HASH = generate_password_hash(_admin_pw_plain or "vasanthksrym")
 
 DEFAULT_BIO = {
     "name": "Vasantha Kumar",

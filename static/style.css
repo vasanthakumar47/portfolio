@@ -138,7 +138,7 @@ img.avatar{display:block; max-width:none} /* make sure it doesn't shrink */
 
 /* -------- Extra-small phones -------- */
 @media (max-width:420px){
-  .avatar{width:90px; height:90px}
+  .avatar{width:120px; height:120px}
 }
 
 /* -------- Tablets (≥768px) -------- */
