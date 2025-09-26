@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+<form class="card form" action="{{ url_for('edit') }}" method="post" enctype="multipart/form-data">
+  <h3>Edit Bio</h3>
+
+  <div class="row">
+    <label>Name</label>
+    <input type="text" name="name" value="{{ bio.name }}" required>
+  </div>
+
+  <div class="row">
+    <label>Title</label>
+    <input type="text" name="title" value="{{ bio.title }}">
+  </div>
+
+  <div class="row">
+    <label>Location</label>
+    <input type="text" name="location" value="{{ bio.location }}">
+  </div>
+
+  <div class="row">
+    <label>Email</label>
+    <input type="email" name="email" value="{{ bio.email }}">
+  </div>
+
+  <div class="row">
+    <label>Phone</label>
+    <input type="text" name="phone" value="{{ bio.phone }}">
+  </div>
+
+  <div class="row">
+    <label>About</label>
+    <textarea name="about" rows="4">{{ bio.about }}</textarea>
+  </div>
+
+  <div class="row">
+    <label>Skills (comma-separated)</label>
+    <input type="text" name="skills" value="{{ skills_text }}">
+  </div>
+
+  <hr class="sep">
+
+  <h4>Projects</h4>
+  <div id="projects">
+    {% for p in bio.projects %}
+    <div class="project-row">
+      <input type="text" name="project_name" placeholder="Project name" value="{{ p.name }}">
+      <input type="text" name="project_desc" placeholder="Short description" value="{{ p.desc }}">
+      <input type="url"  name="project_link" placeholder="https://link" value="{{ p.link }}">
+      <button class="remove" type="button" onclick="this.parentElement.remove()">✕</button>
+    </div>
+    {% endfor %}
+    {% if not bio.projects %}
+    <div class="project-row">
+      <input type="text" name="project_name" placeholder="Project name">
+      <input type="text" name="project_desc" placeholder="Short description">
+      <input type="url"  name="project_link" placeholder="https://link">
+      <button class="remove" type="button" onclick="this.parentElement.remove()">✕</button>
+    </div>
+    {% endif %}
+  </div>
+  <button class="btn small" type="button" onclick="addProject()">+ Add Project</button>
+
+  <hr class="sep">
+
+  <div class="row">
+    <label>Profile Photo</label>
+    <input type="file" name="photo" accept="image/*">
+  </div>
+
+  <div class="actions">
+    <a class="btn outline" href="{{ url_for('home') }}">Cancel</a>
+    <button class="btn" type="submit">Save</button>
+  </div>
+</form>
+
+<script>
+function addProject() {
+  const wrap = document.getElementById('projects');
+  const div = document.createElement('div');
+  div.className = 'project-row';
+  div.innerHTML = `
+    <input type="text" name="project_name" placeholder="Project name">
+    <input type="text" name="project_desc" placeholder="Short description">
+    <input type="url"  name="project_link" placeholder="https://link">
+    <button class="remove" type="button" onclick="this.parentElement.remove()">✕</button>
+  `;
+  wrap.appendChild(div);
+}
+</script>
+{% endblock %}

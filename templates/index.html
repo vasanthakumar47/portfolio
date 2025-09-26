@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="card hero">
+  <div class="hero-left">
+    <h1>{{ bio.name }}</h1>
+    <h2>{{ bio.title }}</h2>
+
+    <p class="muted">
+      <i class="bi bi-geo-alt icon"></i> {{ bio.location }}
+    </p>
+    <p>
+      <i class="bi bi-envelope icon"></i>
+      <a href="mailto:{{ bio.email }}">{{ bio.email }}</a>
+    </p>
+    <p>
+      <i class="bi bi-telephone icon"></i> {{ bio.phone }}
+    </p>
+  </div>
+
+  <div class="hero-right">
+    {% if bio.photo %}
+      <img class="avatar" src="{{ url_for('static', filename=bio.photo) }}" alt="Profile">
+    {% else %}
+      <div class="avatar placeholder">
+        <i class="bi bi-person"></i>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="grid">
+  <article class="card">
+    <h3>About</h3>
+    <p>{{ bio.about }}</p>
+  </article>
+
+  <article class="card">
+    <h3>Skills</h3>
+    <ul class="chips">
+      {% for s in bio.skills %}
+        <li class="chip">{{ s }}</li>
+      {% endfor %}
+    </ul>
+  </article>
+
+  <article class="card wide">
+    <h3>Projects</h3>
+    <div class="projects">
+      {% for p in bio.projects %}
+      <div class="project">
+        <div class="project-title">{{ p.name }}</div>
+        <div class="project-desc">{{ p.desc }}</div>
+        {% if p.link %}
+          <a class="project-link" href="{{ p.link }}" target="_blank" rel="noopener">
+            View <i class="bi bi-box-arrow-up-right" style="margin-left:4px;"></i>
+          </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+      {% if not bio.projects %}
+        <p class="muted">No projects added yet.</p>
+      {% endif %}
+    </div>
+  </article>
+</section>
+{% endblock %}

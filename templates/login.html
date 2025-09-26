@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<form class="card form" action="{{ url_for('login', next=request.args.get('next')) }}" method="post">
+  <h3>Login</h3>
+  <div class="row">
+    <label>Username</label>
+    <input type="text" name="username" placeholder="admin" required>
+  </div>
+  <div class="row">
+    <label>Password</label>
+    <input type="password" name="password" placeholder="••••••••" required>
+  </div>
+  <div class="actions">
+    <a class="btn outline" href="{{ url_for('home') }}">Cancel</a>
+    <button class="btn" type="submit">Login</button>
+  </div>
+</form>
+{% endblock %}
