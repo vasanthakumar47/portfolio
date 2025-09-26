@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{{ title or "Vasanth Portfolio" }}</title>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
@@ -21,7 +22,7 @@
         <a href="{{ url_for('edit') }}">Edit</a>
         <a class="btn" href="{{ url_for('logout') }}">Logout</a>
       {% else %}
-        <a class="btn" href="{{ url_for('login') }}">Login</a>
+        <a class="btn" href="{{ url_for('login') }}">Admin</a>
       {% endif %}
     </div>
   </nav>
@@ -41,20 +42,20 @@
   </main>
 
   <footer class="footer">
-  <span>© {{ 2025 }} Your Name</span>
-  <span class="socials">
-    <a href="https://instagram.com/vasanth_vk_47"
-       target="_blank" rel="noopener"
-       aria-label="Instagram: @vasanth_vk_47">
-      <i class="bi bi-instagram"></i> <span class="handle">@vasanth_vk_47</span>
-    </a>
-    <a href="https://wa.me/917200551525"
-       target="_blank" rel="noopener"
-       aria-label="WhatsApp: +91 7200551525">
-      <i class="bi bi-whatsapp"></i> <span class="handle">+91 7200551525</span>
-    </a>
-  </span>
-</footer>
-
+    <!-- Bootstrap Icons -->
+    <span>© {{ 2025 }} vk47</span>
+    <span class="socials">
+      <a href="https://instagram.com/vasanth_vk_47"
+         target="_blank" rel="noopener"
+         aria-label="Instagram: @vasanth_vk_47">
+        <i class="bi bi-instagram"></i> <span class="handle">@vasanth_vk_47</span>
+      </a>
+      <a href="https://wa.me/917200551525"
+         target="_blank" rel="noopener"
+         aria-label="WhatsApp: +91 7200551525">
+        <i class="bi bi-whatsapp"></i> <span class="handle">+91 7200551525</span>
+      </a>
+    </span>
+  </footer>
 </body>
 </html>

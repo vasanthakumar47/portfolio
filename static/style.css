@@ -35,9 +35,9 @@ a{color:var(--brand);text-decoration:none}
 .brand i{margin-right:8px;vertical-align:-2px}
 .links a{margin-left:12px}
 
-/* -------- Buttons (bigger touch targets) -------- */
+/* -------- Buttons -------- */
 .btn{
-  padding:6px 10px;border-radius:12px;background:var(--brand);color:#081020;border:none;
+  padding:6px 12px;border-radius:12px;background:var(--brand);color:#081020;border:none;
   cursor:pointer;touch-action:manipulation;
 }
 .btn:hover{filter:brightness(1.05)}
@@ -56,17 +56,37 @@ a{color:var(--brand);text-decoration:none}
 .card{
   background:var(--card);border:1px solid #1a2746;border-radius:var(--radius);
   box-shadow:var(--shadow);padding:16px;margin-bottom:16px;
+  overflow:visible; /* prevent avatar clipping */
 }
-.hero{display:flex;gap:14px;align-items:center;justify-content:space-between}
-.hero-left h1{margin:.2rem 0}
+
+/* Top hero row (name + title + avatar) */
+.hero{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;               /* allow wrap on small screens */
+}
+.hero-left{flex:1 1 220px; min-width:0}
+/* Prevent name from splitting into two lines */
+.hero-left h1 {
+  white-space: nowrap;       /* force on one line */
+  overflow: hidden;          /* prevent overflow outside card */
+  text-overflow: ellipsis;   /* add … if it’s too long */
+  font-size: clamp(18px, 4.5vw, 28px); /* shrink gracefully */
+}
+
 .hero-left h2{margin:.2rem 0;font-weight:500;color:var(--accent)}
 .muted{color:var(--muted)}
 
-.avatar{width:120px;height:120px;border-radius:14px;object-fit:cover;border:2px solid #243a66}
+.avatar{flex:0 0 auto; width:120px; height:120px; border-radius:14px;
+  object-fit:cover; border:2px solid #243a66; z-index:1}
 .avatar.placeholder{display:flex;align-items:center;justify-content:center;background:#0d1730;color:#3c568f}
 .avatar.placeholder i{font-size:44px;opacity:.75}
+img.avatar{display:block; max-width:none} /* make sure it doesn't shrink */
 
-.grid{display:grid;grid-template-columns:1fr;gap:14px}         /* single col on phone */
+/* Grid layout */
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
 .card.wide{grid-column:1/-1}
 
 /* -------- Chips -------- */
@@ -80,7 +100,7 @@ a{color:var(--brand);text-decoration:none}
 .project-desc{color:var(--muted);margin:6px 0}
 .project-link{font-weight:500}
 
-/* -------- Form (bigger inputs for touch) -------- */
+/* -------- Form -------- */
 .form .row{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .form input,.form textarea{
   background:#0e1a33;border:1px solid #223763;border-radius:12px;padding:12px 14px;color:var(--text);
@@ -89,13 +109,13 @@ a{color:var(--brand);text-decoration:none}
 .form .actions{display:flex;gap:10px;margin-top:10px}
 .sep{border:none;border-top:1px solid #1a2746;margin:14px 0}
 
-/* -------- Project Row (stack on mobile) -------- */
+/* -------- Project Row -------- */
 .project-row{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:8px}
 .project-row .remove{
   background:#1e2744;color:#fff;border:1px solid #2c3f6c;border-radius:10px;cursor:pointer;padding:10px;
 }
 
-/* -------- Footer (stack on mobile) -------- */
+/* -------- Footer -------- */
 .footer{
   display:flex;flex-direction:column;gap:10px;
   justify-content:center;align-items:center;text-align:center;padding-bottom:12px;
@@ -112,8 +132,13 @@ a{color:var(--brand);text-decoration:none}
 /* -------- Touch tweaks -------- */
 @media (pointer:coarse){
   .links a{padding:8px 10px;display:inline-block}
-  a, .btn, .chip{min-height:44px} /* bigger tap area */
+  a, .btn, .chip{min-height:20px}
   *{-webkit-tap-highlight-color:rgba(103,176,255,.2)}
+}
+
+/* -------- Extra-small phones -------- */
+@media (max-width:420px){
+  .avatar{width:90px; height:90px}
 }
 
 /* -------- Tablets (≥768px) -------- */
@@ -133,7 +158,7 @@ a{color:var(--brand);text-decoration:none}
   .avatar{width:160px;height:160px;border-radius:16px}
 }
 
-/* -------- Reduce motion (accessibility) -------- */
+/* -------- Reduce motion -------- */
 @media (prefers-reduced-motion:reduce){
   *{animation:none !important; transition:none !important}
 }
