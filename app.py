@@ -1,37 +1,29 @@
 import os, json
 from functools import wraps
-from flask import (
-    Flask, render_template, request, redirect, url_for,
-    flash, session, send_from_directory
-)
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.utils import secure_filename
 from werkzeug.security import check_password_hash, generate_password_hash
 
-# ----- Paths -----
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("VERCEL_URL"))
-WRITABLE_ROOT = "/tmp" if IS_VERCEL else BASE_DIR  # only /tmp is writable on Vercel
-
-DATA_PATH = os.path.join(WRITABLE_ROOT, "data.json")
-UPLOAD_FOLDER = os.path.join(WRITABLE_ROOT, "uploads")
+APP_DIR = os.path.abspath(os.path.dirname(__file__))
+DATA_PATH = os.path.join(APP_DIR, "data.json")
+UPLOAD_FOLDER = os.path.join(APP_DIR, "static", "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 
-app = Flask(
-    __name__,
-    static_folder=os.path.join(BASE_DIR, "static"),
-    template_folder=os.path.join(BASE_DIR, "templates"),
-)
+app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "change-this-secret")
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# ----- Admin creds -----
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME", "vasanth")
+# If ADMIN_PASSWORD_HASH not set, we derive hash from ADMIN_PASSWORD (dev only)
 _admin_pw_hash_env = os.getenv("ADMIN_PASSWORD_HASH")
-_admin_pw_plain = os.getenv("ADMIN_PASSWORD")  # for local/dev convenience
-ADMIN_PASSWORD_HASH = _admin_pw_hash_env or generate_password_hash(_admin_pw_plain or "vasanth")
+_admin_pw_plain = os.getenv("ADMIN_PASSWORD")  # dev convenience
+if _admin_pw_hash_env:
+    ADMIN_PASSWORD_HASH = _admin_pw_hash_env
+else:
+    # fallback for local/dev
+    ADMIN_PASSWORD_HASH = generate_password_hash(_admin_pw_plain or "vasanth")
 
-# ----- Defaults -----
 DEFAULT_BIO = {
     "name": "Vasantha Kumar",
     "title": "Data Engineer | Python Developer",
@@ -44,26 +36,26 @@ DEFAULT_BIO = {
         {"name": "Project One", "desc": "Your role and impact.", "link": "https://example.com"},
         {"name": "Project Two", "desc": "Quick highlight.", "link": "https://example.com"}
     ],
-    "photo": ""  # will store a URL like /uploads/filename.jpg
+    "photo": ""
 }
-
-# ----- Helpers -----
-def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def load_bio():
     if not os.path.exists(DATA_PATH):
         return DEFAULT_BIO.copy()
-    try:
-        with open(DATA_PATH, "r", encoding="utf-8") as f:
+    with open(DATA_PATH, "r", encoding="utf-8") as f:
+        try:
             return json.load(f)
-    except json.JSONDecodeError:
-        return DEFAULT_BIO.copy()
+        except json.JSONDecodeError:
+            return DEFAULT_BIO.copy()
 
 def save_bio(data):
     with open(DATA_PATH, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+# --- Auth helper ---
 def login_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
@@ -73,13 +65,7 @@ def login_required(view):
         return view(*args, **kwargs)
     return wrapped
 
-# Serve uploaded files from WRITABLE_ROOT (/tmp on Vercel)
-@app.get("/uploads/<path:filename>")
-def uploaded_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
-
-# ----- Routes -----
-@app.get("/")
+@app.route("/")
 def home():
     bio = load_bio()
     return render_template("index.html", bio=bio)
@@ -114,8 +100,7 @@ def edit():
                 filename = secure_filename(file.filename)
                 save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
                 file.save(save_path)
-                # IMPORTANT: store URL, not relative static path
-                bio["photo"] = url_for("uploaded_file", filename=filename)
+                bio["photo"] = f"uploads/{filename}"
                 flash("Profile photo updated.", "success")
             else:
                 flash("Invalid image type. Allowed: png, jpg, jpeg, gif, webp", "danger")
@@ -127,6 +112,7 @@ def edit():
     skills_text = ", ".join(bio.get("skills", []))
     return render_template("edit.html", bio=bio, skills_text=skills_text)
 
+# --- Auth routes ---
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -141,12 +127,11 @@ def login():
         return redirect(url_for("login"))
     return render_template("login.html")
 
-@app.get("/logout")
+@app.route("/logout")
 def logout():
     session.pop("user", None)
     flash("Logged out.", "success")
     return redirect(url_for("home"))
 
 if __name__ == "__main__":
-    # Local dev only; Vercel ignores this and uses api/index.py
     app.run(host="0.0.0.0", port=5000, debug=True)
